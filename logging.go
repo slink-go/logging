@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type DxLogger interface {
+type Logger interface {
 	Trace(message string, args ...interface{})
 	Debug(message string, args ...interface{})
 	Info(message string, args ...interface{})
@@ -101,20 +101,20 @@ func (l *dxLogger) GetLevel() string {
 
 func init() {
 	loggerFactory = loggerFactoryImpl{
-		loggers: make(map[string]DxLogger),
+		loggers: make(map[string]Logger),
 	}
 }
 
 var loggerFactory loggerFactoryImpl
-var mutex sync.RWMutex
 
 type loggerFactoryImpl struct {
-	loggers map[string]DxLogger
+	loggers map[string]Logger
+	mutex   sync.Mutex
 }
 
-func GetLogger(id string) DxLogger {
-	mutex.Lock()
-	defer mutex.Unlock()
+func GetLogger(id string) Logger {
+	loggerFactory.mutex.Lock()
+	defer loggerFactory.mutex.Unlock()
 	v, ok := loggerFactory.loggers[id]
 	if ok {
 		return v
@@ -124,7 +124,7 @@ func GetLogger(id string) DxLogger {
 	return l
 }
 
-func newLogger(id string) DxLogger {
+func newLogger(id string) Logger {
 	var w io.Writer
 	if os.Getenv("GO_ENV") != "dev" {
 		w = os.Stdout
