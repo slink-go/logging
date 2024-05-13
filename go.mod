@@ -1,4 +1,4 @@
-module github.com/slink/logging
+module github.com/slink-go/logging
 
 go 1.22.3
 
