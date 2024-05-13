@@ -3,7 +3,7 @@ A simplifying wrapper for zerolog.
 
 Import:
 ```shell
-go get github.com/slink-go/logging@v0.0.1
+go get github.com/slink-go/logging@v0.0.2
 ```
 Use:
 ```go
