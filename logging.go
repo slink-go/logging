@@ -30,72 +30,74 @@ type Logger interface {
 	GetLevel() string
 }
 
-type dxLogger struct {
+// region - zerolog
+
+type zerologLogger struct {
 	lg *zerolog.Logger
 }
 
-func (l *dxLogger) Trace(message string, args ...interface{}) {
+func (l *zerologLogger) Trace(message string, args ...interface{}) {
 	if l.lg.GetLevel() == zerolog.TraceLevel {
 		l.lg.Trace().Msg(fmt.Sprintf(message, args...))
 	}
 }
-func (l *dxLogger) Debug(message string, args ...interface{}) {
+func (l *zerologLogger) Debug(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.DebugLevel {
 		l.lg.Debug().Msg(fmt.Sprintf(message, args...))
 	}
 }
-func (l *dxLogger) Info(message string, args ...interface{}) {
+func (l *zerologLogger) Info(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.InfoLevel {
 		l.lg.Info().Msg(fmt.Sprintf(message, args...))
 	}
 }
-func (l *dxLogger) Warning(message string, args ...interface{}) {
+func (l *zerologLogger) Warning(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.WarnLevel {
 		l.lg.Warn().Msg(fmt.Sprintf(message, args...))
 	}
 }
-func (l *dxLogger) Error(message string, args ...interface{}) {
+func (l *zerologLogger) Error(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.ErrorLevel {
 		l.lg.Error().Msg(fmt.Sprintf(message, args...))
 	}
 }
-func (l *dxLogger) Fatal(message string, args ...interface{}) {
+func (l *zerologLogger) Fatal(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.FatalLevel {
 		l.lg.Fatal().Msg(fmt.Sprintf(message, args...))
 	}
 }
-func (l *dxLogger) Panic(message string, args ...interface{}) {
+func (l *zerologLogger) Panic(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.PanicLevel {
 		l.lg.Panic().Msg(fmt.Sprintf(message, args...))
 	}
 }
 
-func (l *dxLogger) IsTraceEnabled() bool {
+func (l *zerologLogger) IsTraceEnabled() bool {
 	return l.lg.GetLevel() == zerolog.TraceLevel
 }
-func (l *dxLogger) IsDebugEnabled() bool {
+func (l *zerologLogger) IsDebugEnabled() bool {
 	return l.lg.GetLevel() <= zerolog.DebugLevel
 }
-func (l *dxLogger) IsInfoEnabled() bool {
+func (l *zerologLogger) IsInfoEnabled() bool {
 	return l.lg.GetLevel() <= zerolog.InfoLevel
 }
-func (l *dxLogger) IsWarningEnabled() bool {
+func (l *zerologLogger) IsWarningEnabled() bool {
 	return l.lg.GetLevel() <= zerolog.WarnLevel
 }
-func (l *dxLogger) IsErrorEnabled() bool {
+func (l *zerologLogger) IsErrorEnabled() bool {
 	return l.lg.GetLevel() <= zerolog.ErrorLevel
 }
-func (l *dxLogger) IsFatalEnabled() bool {
+func (l *zerologLogger) IsFatalEnabled() bool {
 	return l.lg.GetLevel() <= zerolog.FatalLevel
 }
-func (l *dxLogger) IsPanicEnabled() bool {
+func (l *zerologLogger) IsPanicEnabled() bool {
 	return l.lg.GetLevel() <= zerolog.PanicLevel
 }
 
-func (l *dxLogger) SetLevel(level string) {
+func (l *zerologLogger) SetLevel(level string) {
 	l.lg.Level(getLoggingLevel(level))
 }
-func (l *dxLogger) GetLevel() string {
+func (l *zerologLogger) GetLevel() string {
 	return l.lg.GetLevel().String()
 }
 
@@ -119,12 +121,12 @@ func GetLogger(id string) Logger {
 	if ok {
 		return v
 	}
-	l := newLogger(id)
+	l := newZerologLogger(id)
 	loggerFactory.loggers[id] = l
 	return l
 }
 
-func newLogger(id string) Logger {
+func newZerologLogger(id string) Logger {
 	var w io.Writer
 	if os.Getenv("GO_ENV") != "dev" {
 		w = os.Stdout
@@ -136,7 +138,7 @@ func newLogger(id string) Logger {
 		Level(getLoggingLevel(id)).
 		With().Str("logger", id).Timestamp(). //Caller().
 		Logger()
-	result := &dxLogger{
+	result := &zerologLogger{
 		lg: &logger,
 	}
 	return result
@@ -192,6 +194,13 @@ func stringToLevel(key string) (zerolog.Level, error) {
 	}
 	return zerolog.ParseLevel(key)
 }
+
+// endregion
+// region - slog
+
+// endregion
+// region - common
+
 func getConfiguredLevel(id string) string {
 	key := os.Getenv("LOGGING_LEVEL_" + strings.ToUpper(strings.ReplaceAll(id, "-", "_")))
 	if strings.TrimSpace(key) == "" {
@@ -199,3 +208,5 @@ func getConfiguredLevel(id string) string {
 	}
 	return key
 }
+
+// endregion
