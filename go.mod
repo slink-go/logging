@@ -1,6 +1,6 @@
-module github.com/slink-go/logging
+module go.slink.ws/logging
 
-go 1.22.3
+go 1.24.0
 
 require github.com/rs/zerolog v1.33.0
 
