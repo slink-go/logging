@@ -51,14 +51,14 @@ type loggerFactoryImpl struct {
 func GetNoOpLogger() Logger {
 	return &noOpLogger{}
 }
-func GetLogger(id string) Logger {
+func GetLogger(id string, opts ...Option) Logger {
 	loggerFactory.mutex.Lock()
 	defer loggerFactory.mutex.Unlock()
 	v, ok := loggerFactory.consoleLoggers[id]
 	if ok {
 		return v
 	}
-	l := newZerologLogger(id)
+	l := newZerologLogger(id, opts...)
 	loggerFactory.consoleLoggers[id] = l
 	return l
 }
@@ -78,7 +78,7 @@ func GetFileLogger(file *os.File, id string) Logger {
 
 // region - zerolog
 
-func newZerologLogger(id string) Logger {
+func newZerologLogger(id string, opts ...Option) Logger {
 	var w io.Writer
 	if os.Getenv("GO_ENV") != "dev" {
 		w = os.Stdout
@@ -90,6 +90,13 @@ func newZerologLogger(id string) Logger {
 		Level(getLoggingLevel(id)).
 		With().Str("logger", id).Timestamp(). //Caller().
 		Logger()
+
+	for _, opt := range opts {
+		if opt != nil {
+			opt.Apply(&logger)
+		}
+	}
+
 	result := &zerologLogger{
 		lg: &logger,
 	}
