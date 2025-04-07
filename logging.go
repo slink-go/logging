@@ -85,18 +85,15 @@ func newZerologLogger(id string, opts ...Option) Logger {
 	} else {
 		w = configureConsoleWriter(id)
 	}
-	logger := zerolog.
-		New(w).
-		Level(getLoggingLevel(id)).
-		With().Str("logger", id).Timestamp(). //Caller().
-		Logger()
+	ctx := zerolog.New(w).Level(getLoggingLevel(id)).With().Str("logger", id).Timestamp()
 
 	for _, opt := range opts {
 		if opt != nil {
-			opt.Apply(&logger)
+			ctx = opt(ctx)
 		}
 	}
 
+	logger := ctx.Logger()
 	result := &zerologLogger{
 		lg: &logger,
 	}

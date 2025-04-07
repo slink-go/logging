@@ -1,18 +1,23 @@
 package logging
 
-import "github.com/rs/zerolog"
+import (
+	"fmt"
+	"github.com/rs/zerolog"
+	"path/filepath"
+)
 
-type Option interface {
-	Apply(*zerolog.Logger)
-}
+type Option func(zerolog.Context) zerolog.Context
 
-type callerOpt struct {
-}
-
-func (c *callerOpt) Apply(logger *zerolog.Logger) {
-	*logger = logger.With().Caller().Logger()
-}
-
-func WithCaller() Option {
-	return &callerOpt{}
+func WithCaller(skipFrameCount ...int) Option {
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
+		return fmt.Sprintf("%s:%d", filepath.Base(file), line)
+	}
+	return func(ctx zerolog.Context) zerolog.Context {
+		if len(skipFrameCount) > 0 {
+			ctx = ctx.CallerWithSkipFrameCount(skipFrameCount[0])
+		} else {
+			ctx = ctx.CallerWithSkipFrameCount(3)
+		}
+		return ctx
+	}
 }
