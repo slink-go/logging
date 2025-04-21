@@ -1,6 +1,8 @@
 package logging
 
 import (
+	"fmt"
+	"github.com/rs/zerolog"
 	"testing"
 )
 
@@ -16,6 +18,18 @@ func TestLoggerWithCaller(t *testing.T) {
 	GetLogger("test5", WithCaller(5)).Info("test message; skip = 5")
 
 	testLogLevel1(GetLogger("test3"))
+}
+
+type testHook struct {
+}
+
+func (t testHook) Run(e *zerolog.Event, level zerolog.Level, message string) {
+	fmt.Println("hook message:", message)
+	fmt.Println("hook level:", level)
+	fmt.Printf("hook event: %#v\n", *e)
+}
+func TestLoggerWithHook(t *testing.T) {
+	GetLogger("testY", WithHook(testHook{})).Info("test message")
 }
 
 func testLogLevel1(logger Logger) {

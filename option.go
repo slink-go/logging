@@ -21,3 +21,8 @@ func WithCaller(skipFrameCount ...int) Option {
 		return ctx
 	}
 }
+func WithHook(hook zerolog.Hook) Option {
+	return func(ctx zerolog.Context) zerolog.Context {
+		return ctx.Logger().Hook(hook).With()
+	}
+}
