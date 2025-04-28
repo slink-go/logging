@@ -26,3 +26,8 @@ func WithHook(hook zerolog.Hook) Option {
 		return ctx.Logger().Hook(hook).With()
 	}
 }
+func WithLevel(level zerolog.Level) Option {
+	return func(ctx zerolog.Context) zerolog.Context {
+		return ctx.Logger().Level(level).With()
+	}
+}

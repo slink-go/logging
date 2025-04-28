@@ -97,7 +97,8 @@ func (l *zerologLogger) IsPanicEnabled() bool {
 }
 
 func (l *zerologLogger) SetLevel(level string) {
-	l.lg.Level(getLoggingLevel(level))
+	v := l.lg.Level(getLoggingLevel(level))
+	l.lg = &v
 }
 func (l *zerologLogger) GetLevel() string {
 	return l.lg.GetLevel().String()

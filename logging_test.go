@@ -31,6 +31,10 @@ func (t testHook) Run(e *zerolog.Event, level zerolog.Level, message string) {
 func TestLoggerWithHook(t *testing.T) {
 	GetLogger("testY", WithHook(testHook{})).Info("test message")
 }
+func TestLoggerWithLevel(t *testing.T) {
+	GetLogger("testLvl1", WithLevel(zerolog.TraceLevel)).Debug("test message")
+	GetLogger("testLvl2", WithLevel(zerolog.WarnLevel)).Info("test message")
+}
 
 func testLogLevel1(logger Logger) {
 	logger.Info("test message level 1")
