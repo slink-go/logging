@@ -87,7 +87,7 @@ func getConfiguredLevel(id string) string {
 }
 func configureConsoleWriter(id string) io.Writer {
 	return zerolog.ConsoleWriter{
-		Out:        os.Stderr,
+		Out:        os.Stdout,
 		TimeFormat: time.RFC3339,
 		//FormatLevel: func(i interface{}) string {
 		//	return strings.ToUpper(fmt.Sprintf("[%5s]", i))
