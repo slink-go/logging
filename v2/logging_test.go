@@ -8,11 +8,14 @@ import (
 )
 
 func TestLoggerBasic(t *testing.T) {
-	os.Setenv("GO_ENV", "dev")
-	GetLogger("test").Info("message %v=%v %v=%v %v=%v %v=%v", "k1", "v", "k2", 123, "k3", 0.1, "k4", false)
+	os.Setenv("LOGGING_FORMAT", "pretty")
+	GetLogger("test").SetLevel("TRACE").Info("message with args", "k1", "v", "k2", 123, "k3", 0.1, "k4", false)
+	GetLogger("test").SetLevel("TRACE").Info("message basic")
 }
 
 func TestLoggerWithCaller(t *testing.T) {
+
+	os.Setenv("LOGGING_FORMAT", "pretty")
 
 	GetLogger("testY").Info("test message")
 	GetLogger("testX", WithCaller()).Info("test message; skip = default (3)")
@@ -38,8 +41,9 @@ func TestLoggerWithHook(t *testing.T) {
 	GetLogger("testY", WithHook(testHook{})).Info("test message")
 }
 func TestLoggerWithLevel(t *testing.T) {
-	GetLogger("testLvl1", WithLevel(zerolog.TraceLevel)).Debug("test message")
-	GetLogger("testLvl2", WithLevel(zerolog.WarnLevel)).Info("test message")
+	os.Setenv("LOGGING_FORMAT", "pretty")
+	os.Setenv("LOGGING_LEVEL_ROOT", "info")
+	GetLogger("testLvl1", WithLevelStr("TRACE")).Debug("test message debug")
 }
 
 func testLogLevel1(logger Logger) {
