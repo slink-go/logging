@@ -21,6 +21,8 @@ func (l *noOpLogger) Info(message string, args ...interface{}) {
 }
 func (l *noOpLogger) Warning(message string, args ...interface{}) {
 }
+func (l *noOpLogger) Warn(message string, args ...interface{}) {
+}
 func (l *noOpLogger) Error(message string, args ...interface{}) {
 }
 func (l *noOpLogger) Fatal(message string, args ...interface{}) {

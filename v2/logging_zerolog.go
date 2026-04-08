@@ -58,6 +58,9 @@ func (l *zerologLogger) Warning(message string, args ...interface{}) {
 		l.lg.Warn().Fields(args).Msg(message)
 	}
 }
+func (l *zerologLogger) Warn(message string, args ...interface{}) {
+	l.Warning(message, args...)
+}
 func (l *zerologLogger) Error(message string, args ...interface{}) {
 	if l.lg.GetLevel() <= zerolog.ErrorLevel {
 		l.lg.Error().Fields(args).Msg(message)

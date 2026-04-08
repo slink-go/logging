@@ -114,6 +114,9 @@ func (l *fileLogger) Warning(message string, args ...interface{}) {
 		l.log(zerolog.WarnLevel, message, args...)
 	}
 }
+func (l *fileLogger) Warn(message string, args ...interface{}) {
+	l.Warning(message, args...)
+}
 func (l *fileLogger) Error(message string, args ...interface{}) {
 	if l.level <= zerolog.ErrorLevel {
 		l.log(zerolog.ErrorLevel, message, args...)
