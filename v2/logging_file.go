@@ -87,6 +87,9 @@ func (l *fileLogger) args(args ...interface{}) string {
 	return sb.String()
 }
 
+func (l *fileLogger) Close() {
+	l.file.Close()
+}
 func (l *fileLogger) Clone(newId string) Logger {
 	return GetFileLogger(l.file, newId)
 }

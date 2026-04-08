@@ -8,6 +8,15 @@ import (
 
 type Option func(zerolog.Context) zerolog.Context
 
+func With(args ...interface{}) Option {
+	return func(ctx zerolog.Context) zerolog.Context {
+		l := ctx.Logger()
+		l.UpdateContext(func(c zerolog.Context) zerolog.Context {
+			return c.Fields(args)
+		})
+		return l.With()
+	}
+}
 func WithCaller(skipFrameCount ...int) Option {
 	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
 		return fmt.Sprintf("%s:%d", filepath.Base(file), line)

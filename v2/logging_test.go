@@ -13,6 +13,12 @@ func TestLoggerBasic(t *testing.T) {
 	GetLogger("test").SetLevel("TRACE").Info("message basic")
 }
 
+func TestLoggerWith(t *testing.T) {
+	os.Setenv("LOGGING_FORMAT", "pretty")
+	GetLogger("test", With("key", "value", "num", 10)).SetLevel("TRACE").Info("message with args", "k1", "v", "k2", 123, "k3", 0.1, "k4", false)
+	GetLogger("test", With("key", "value", "num", 10)).Info("message basic")
+}
+
 func TestLoggerWithCaller(t *testing.T) {
 
 	os.Setenv("LOGGING_FORMAT", "pretty")

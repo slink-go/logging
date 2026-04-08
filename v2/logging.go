@@ -64,6 +64,11 @@ func GetLogger(id string, opts ...Option) Logger {
 	loggerFactory.mutex.Unlock()
 	return l
 }
+func DeleteLogger(id string) {
+	loggerFactory.mutex.Lock()
+	delete(loggerFactory.consoleLoggers, id)
+	loggerFactory.mutex.Unlock()
+}
 func GetFileLogger(file *os.File, id string) Logger {
 	loggerFactory.mutex.Lock()
 	defer loggerFactory.mutex.Unlock()
@@ -74,6 +79,15 @@ func GetFileLogger(file *os.File, id string) Logger {
 	l := newCommonFileLogger(file, id)
 	loggerFactory.consoleLoggers[id] = l
 	return l
+}
+func DeleteFileLogger(id string) {
+	loggerFactory.mutex.Lock()
+	defer loggerFactory.mutex.Unlock()
+	v, ok := loggerFactory.fileLoggers[id]
+	if ok {
+		v.(*fileLogger).Close()
+		delete(loggerFactory.fileLoggers, id)
+	}
 }
 
 // endregion
