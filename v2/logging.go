@@ -36,6 +36,7 @@ func init() {
 	loggerFactory = loggerFactoryImpl{
 		consoleLoggers: make(map[string]Logger),
 		fileLoggers:    make(map[string]Logger),
+		customLoggers:  make(map[string]Logger),
 	}
 }
 
@@ -46,6 +47,7 @@ var loggerFactory loggerFactoryImpl
 type loggerFactoryImpl struct {
 	consoleLoggers map[string]Logger
 	fileLoggers    map[string]Logger
+	customLoggers  map[string]Logger
 	mutex          sync.RWMutex
 }
 
@@ -62,6 +64,19 @@ func GetLogger(id string, opts ...Option) Logger {
 	l := newZerologLogger(id, opts...)
 	loggerFactory.mutex.Lock()
 	loggerFactory.consoleLoggers[id] = l
+	loggerFactory.mutex.Unlock()
+	return l
+}
+func GetCustomLogger(id string, logFn func(msg string) /*, opts ...Option*/) Logger {
+	loggerFactory.mutex.RLock()
+	v, ok := loggerFactory.customLoggers[id]
+	loggerFactory.mutex.RUnlock()
+	if ok {
+		return v
+	}
+	l := newCustomLogger(id, logFn /*, opts...*/)
+	loggerFactory.mutex.Lock()
+	loggerFactory.customLoggers[id] = l
 	loggerFactory.mutex.Unlock()
 	return l
 }
@@ -131,7 +146,7 @@ func getLoggingLevel(id string) zerolog.Level {
 		LevelTraceValue = "trace"
 		LevelDebugValue = "debug"
 		LevelInfoValue = "info"
-		LevelWarnValue = "warn"
+		LevelWarnValue = "warn" / "warning"
 		LevelErrorValue = "error"
 		LevelFatalValue = "fatal"
 		LevelPanicValue = "panic"
@@ -144,11 +159,15 @@ func getLoggingLevel(id string) zerolog.Level {
 	return lvl
 }
 func stringToLevel(key string) (zerolog.Level, error) {
-	if strings.ToUpper(key) == "OFF" {
-		return zerolog.NoLevel, nil
-	}
 	if key == "" {
 		return zerolog.NoLevel, errors.New("empty config")
+	}
+	key = strings.ToUpper(key)
+	if key == "OFF" {
+		return zerolog.NoLevel, nil
+	}
+	if key == "WARNING" {
+		return zerolog.WarnLevel, nil
 	}
 	return zerolog.ParseLevel(key)
 }
