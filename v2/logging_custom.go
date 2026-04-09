@@ -24,7 +24,11 @@ func newCustomLogger(id string, logFn func(string) /*, opts ...Option*/) Logger 
 }
 
 func (l *customLogger) Clone(newId string) Logger {
-	return l
+	return &customLogger{
+		level:  getLoggingLevel(newId),
+		logger: newId,
+		logFn:  l.logFn,
+	}
 }
 
 func (l *customLogger) Trace(message string, args ...interface{}) {

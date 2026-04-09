@@ -18,5 +18,5 @@ func TestCustomLogger(t *testing.T) {
 	l.Info("hello info")
 	l.Warning("hello warn", "a", 1, "b", "2")
 	l.Error("hello error")
-	l.Panic("hello panic", "a", 1, "b", "2")
+	l.Clone("another").Panic("hello panic", "a", 1, "b", "2")
 }
