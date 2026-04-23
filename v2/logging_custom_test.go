@@ -20,3 +20,10 @@ func TestCustomLogger(t *testing.T) {
 	l.Error("hello error")
 	l.Clone("another").Panic("hello panic", "a", 1, "b", "2")
 }
+
+func TestCustomLoggerTs(t *testing.T) {
+	l1 := GetCustomLogger("l1", logFn)
+	l2 := GetCustomLoggerWithTimestamp("l2", logFn)
+	l1.Info("hello l1")
+	l2.Info("hello l2")
+}

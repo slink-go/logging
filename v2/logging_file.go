@@ -42,6 +42,7 @@ func newCommonFileLogger(f *os.File, id string) Logger {
 	}
 }
 
+const fileLogFormatWithoutTs = "%3s [%s] %s %s"
 const fileLogFormat = "%s %3s [%s] %s %s"
 
 type fileLogger struct {

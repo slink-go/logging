@@ -80,6 +80,19 @@ func GetCustomLogger(id string, logFn func(msg string) /*, opts ...Option*/) Log
 	loggerFactory.mutex.Unlock()
 	return l
 }
+func GetCustomLoggerWithTimestamp(id string, logFn func(msg string) /*, opts ...Option*/) Logger {
+	loggerFactory.mutex.RLock()
+	v, ok := loggerFactory.customLoggers[id]
+	loggerFactory.mutex.RUnlock()
+	if ok {
+		return v
+	}
+	l := newCustomLoggerWithTimestamp(id, logFn /*, opts...*/)
+	loggerFactory.mutex.Lock()
+	loggerFactory.customLoggers[id] = l
+	loggerFactory.mutex.Unlock()
+	return l
+}
 func DeleteLogger(id string) {
 	loggerFactory.mutex.Lock()
 	delete(loggerFactory.consoleLoggers, id)

@@ -9,17 +9,27 @@ import (
 )
 
 type customLogger struct {
-	mu     sync.Mutex
-	logFn  func(string)
-	logger string
-	level  zerolog.Level
+	mu               sync.Mutex
+	logFn            func(string)
+	logger           string
+	level            zerolog.Level
+	includeTimestamp bool
 }
 
-func newCustomLogger(id string, logFn func(string) /*, opts ...Option*/) Logger {
+func newCustomLogger(id string, logFn func(string), opts ...Option) Logger {
 	return &customLogger{
-		level:  getLoggingLevel(id),
-		logger: id,
-		logFn:  logFn,
+		level:            getLoggingLevel(id),
+		logger:           id,
+		logFn:            logFn,
+		includeTimestamp: false,
+	}
+}
+func newCustomLoggerWithTimestamp(id string, logFn func(string), opts ...Option) Logger {
+	return &customLogger{
+		level:            getLoggingLevel(id),
+		logger:           id,
+		logFn:            logFn,
+		includeTimestamp: true,
 	}
 }
 
@@ -114,9 +124,18 @@ func (l *customLogger) log(level zerolog.Level, message string, args ...interfac
 	l.mu.Unlock()
 }
 func (l *customLogger) format(level zerolog.Level, message string, args ...interface{}) string {
+	if l.includeTimestamp {
+		return fmt.Sprintf(
+			fileLogFormat,
+			time.Now().Format("2006-01-02 15:04:05.000"),
+			logLevelAbbr(level),
+			l.logger,
+			message,
+			l.args(args...),
+		)
+	}
 	return fmt.Sprintf(
-		fileLogFormat,
-		time.Now().Format("2006-01-02 15:04:05.000"),
+		fileLogFormatWithoutTs,
 		logLevelAbbr(level),
 		l.logger,
 		message,
