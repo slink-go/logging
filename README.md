@@ -10,3 +10,10 @@ Use:
   l := logging.GetLogger("logger-name")
   l.Warn("some %s message %d", "test", 1)
 ```
+
+## Лицензия
+
+Двойная лицензия:
+
+- [AGPL-3.0-only](LICENSE) — свободное использование, copyleft при распространении;
+- [Коммерческая лицензия](LICENSE.COMMERCIAL) — использование без copyleft-обязательств: kami@slink.ws.
